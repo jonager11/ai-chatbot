@@ -24,7 +24,9 @@ app.post("/chat", async (req, res) => {
   res.json({ reply: response.content[0].text });
 });
 
-app.use(express.static("public"));
+app.get("/", (req, res) => {
+  res.sendFile(__dirname + "/public/index.html");
+});
 
 app.listen(3000, () => {
   console.log("Server körs på http://localhost:3000");
