@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JAY AI – Faktura & Admin</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 40px 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+        }
+
+        .avatar {
+            width: 52px;
+            height: 52px;
+            background: rgba(255,255,255,0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+
+        .header h1 { font-size: 22px; font-weight: 700; }
+        .header p { font-size: 14px; opacity: 0.85; margin-top: 4px; }
+
+        .tabs {
+            display: flex;
+            border-bottom: 2px solid #eee;
+        }
+
+        .tab {
+            flex: 1;
+            padding: 16px;
+            text-align: center;
+            cursor: pointer;
+            font-size: 14px;
+            font-weight: 600;
+            color: #888;
+            transition: all 0.2s;
+            border-bottom: 3px solid transparent;
+            margin-bottom: -2px;
+        }
+
+        .tab.active {
+            color: #667eea;
+            border-bottom-color: #667eea;
+        }
+
+        .tab-content {
+            display: none;
+            padding: 36px;
+        }
+
+        .tab-content.active { display: block; }
+
+        label {
+            display: block;
+            font-size: 14px;
+            font-weight: 600;
+            color: #444;
+            margin-bottom: 8px;
+        }
+
+        textarea {
+            width: 100%;
+            padding: 16px;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            font-size: 14px;
+            font-family: inherit;
+            outline: none;
+            resize: vertical;
+            min-height: 180px;
+            transition: border-color 0.2s;
+        }
+
+        textarea:focus { border-color: #667eea; }
+
+        .action-btn {
+            width: 100%;
+            padding: 16px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 16px;
+            transition: opacity 0.2s;
+        }
+
+        .action-btn:hover { opacity: 0.9; }
+        .action-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+        .result {
+            display: none;
+            margin-top: 24px;
+            background: #f8f9fa;
+            border-radius: 12px;
+            padding: 24px;
+        }
+
+        .result.visible { display: block; }
+
+        .result h3 {
+            font-size: 16px;
+            color: #333;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .result-content {
+            font-size: 14px;
+            line-height: 1.8;
+            color: #444;
+            white-space: pre-wrap;
+        }
+
+        .tag-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .tag {
+            padding: 10px 14px;
+            border: 2px solid #eee;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: 13px;
+            text-align: center;
+            transition: all 0.2s;
+            color: #555;
+        }
+
+        .tag:hover, .tag.selected {
+            border-color: #667eea;
+            background: #f0f2ff;
+            color: #667eea;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 30px;
+            display: none;
+        }
+
+        .loading.visible { display: block; }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #eee;
+            border-top-color: #667eea;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+            margin: 0 auto 12px;
+        }
+
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 16px;
+            margin-bottom: 20px;
+        }
+
+        .summary-card {
+            background: white;
+            border: 2px solid #eee;
+            border-radius: 12px;
+            padding: 16px;
+            text-align: center;
+        }
+
+        .summary-card .amount {
+            font-size: 24px;
+            font-weight: 700;
+            color: #667eea;
+        }
+
+        .summary-card .label {
+            font-size: 12px;
+            color: #888;
+            margin-top: 4px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="avatar">📄</div>
+            <div>
+                <h1>JAY AI – Faktura & Admin</h1>
+                <p>Analysera fakturor och automatisera administration</p>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="switchTab('analysera')">📊 Analysera faktura</div>
+            <div class="tab" onclick="switchTab('kategorisera')">🏷️ Kategorisera kostnader</div>
+            <div class="tab" onclick="switchTab('paminnelse')">🔔 Påminnelsebrev</div>
+        </div>
+
+        <!-- TAB 1: Analysera -->
+        <div class="tab-content active" id="tab-analysera">
+            <label>Klistra in fakturatext här</label>
+            <textarea id="invoiceText" placeholder="Klistra in din fakturatext här – t.ex. från en PDF eller e-post...
+
+Exempel:
+Faktura #1234
+Datum: 2025-03-15
+Förfallodatum: 2025-04-15
+Leverantör: AB Städtjänst
+Tjänst: Kontorsstädning mars
+Belopp: 3 500 kr
+Moms (25%): 875 kr
+Totalt: 4 375 kr"></textarea>
+            <button class="action-btn" onclick="analyzeinvoice()">📊 Analysera faktura</button>
+            
+            <div class="loading" id="loading-analysera">
+                <div class="spinner"></div>
+                <p>Analyserar fakturan...</p>
+            </div>
+
+            <div class="result" id="result-analysera">
+                <h3>📊 Analysresultat</h3>
+                <div class="result-content" id="content-analysera"></div>
+            </div>
+        </div>
+
+        <!-- TAB 2: Kategorisera -->
+        <div class="tab-content" id="tab-kategorisera">
+            <label>Välj kategori</label>
+            <div class="tag-grid">
+                <div class="tag" onclick="selectTag(this)">🏢 Hyra & lokal</div>
+                <div class="tag" onclick="selectTag(this)">💻 IT & teknik</div>
+                <div class="tag" onclick="selectTag(this)">🚗 Transport</div>
+                <div class="tag" onclick="selectTag(this)">📦 Material</div>
+                <div class="tag" onclick="selectTag(this)">👥 Personal</div>
+                <div class="tag" onclick="selectTag(this)">📢 Marknadsföring</div>
+                <div class="tag" onclick="selectTag(this)">⚡ El & energi</div>
+                <div class="tag" onclick="selectTag(this)">🔧 Underhåll</div>
+            </div>
+            <label>Klistra in kostnader att kategorisera</label>
+            <textarea id="categorizeText" placeholder="Klistra in en lista med kostnader här...
+
+Exempel:
+- Kontorshyra april: 12 000 kr
+- Elräkning: 2 300 kr  
+- Ny laptop: 8 500 kr
+- Google Ads: 3 000 kr
+- Städning: 1 800 kr"></textarea>
+            <button class="action-btn" onclick="categorizeExpenses()">🏷️ Kategorisera</button>
+            
+            <div class="loading" id="loading-kategorisera">
+                <div class="spinner"></div>
+                <p>Kategoriserar kostnader...</p>
+            </div>
+
+            <div class="result" id="result-kategorisera">
+                <h3>🏷️ Kategoriserade kostnader</h3>
+                <div class="result-content" id="content-kategorisera"></div>
+            </div>
+        </div>
+
+        <!-- TAB 3: Påminnelse -->
+        <div class="tab-content" id="tab-paminnelse">
+            <label>Kundens namn / företag</label>
+            <textarea id="reminderName" placeholder="t.ex. Svenssons Bygg AB" style="min-height: 60px;"></textarea>
+            
+            <label style="margin-top: 16px;">Fakturadetaljer</label>
+            <textarea id="reminderDetails" placeholder="t.ex. Faktura #1234, belopp 5 000 kr, förfallodatum 2025-03-01"></textarea>
+            
+            <button class="action-btn" onclick="generateReminder()">🔔 Generera påminnelsebrev</button>
+            
+            <div class="loading" id="loading-paminnelse">
+                <div class="spinner"></div>
+                <p>Skriver påminnelsebrev...</p>
+            </div>
+
+            <div class="result" id="result-paminnelse">
+                <h3>🔔 Påminnelsebrev</h3>
+                <div class="result-content" id="content-paminnelse"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach((t, i) => {
+                t.classList.toggle('active', ['analysera','kategorisera','paminnelse'][i] === tab);
+            });
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+            document.getElementById('tab-' + tab).classList.add('active');
+        }
+
+        function selectTag(el) {
+            el.classList.toggle('selected');
+        }
+
+        async function callAI(prompt, system, loadingId, resultId, contentId) {
+            document.getElementById(loadingId).classList.add('visible');
+            document.getElementById(resultId).classList.remove('visible');
+
+            const response = await fetch('/api/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: prompt, system })
+            });
+
+            const data = await response.json();
+            document.getElementById(loadingId).classList.remove('visible');
+            document.getElementById(resultId).classList.add('visible');
+            document.getElementById(contentId).textContent = data.reply;
+        }
+
+        async function analyzeinvoice() {
+            const text = document.getElementById('invoiceText').value.trim();
+            if (!text) { alert('Klistra in en faktura först!'); return; }
+            
+            await callAI(
+                `Analysera denna faktura och ge en strukturerad sammanfattning på svenska:\n\n${text}\n\nInkludera: leverantör, belopp ex moms, moms, totalt belopp, förfallodatum, och om fakturan verkar korrekt.`,
+                'Du är en expert på svensk bokföring och fakturahantering. Analysera fakturor noggrant och ge tydliga, strukturerade svar på svenska.',
+                'loading-analysera', 'result-analysera', 'content-analysera'
+            );
+        }
+
+        async function categorizeExpenses() {
+            const text = document.getElementById('categorizeText').value.trim();
+            if (!text) { alert('Klistra in kostnader först!'); return; }
+            
+            const selected = [...document.querySelectorAll('.tag.selected')].map(t => t.textContent).join(', ');
+            
+            await callAI(
+                `Kategorisera dessa kostnader för svensk bokföring${selected ? ` (fokusera på: ${selected})` : ''}:\n\n${text}\n\nGe en tydlig kategorisering med kontonummer enligt BAS-kontoplanen där det passar.`,
+                'Du är en expert på svensk bokföring och BAS-kontoplanen. Kategorisera kostnader korrekt och ge tydliga svar på svenska.',
+                'loading-kategorisera', 'result-kategorisera', 'content-kategorisera'
+            );
+        }
+
+        async function generateReminder() {
+            const name = document.getElementById('reminderName').value.trim();
+            const details = document.getElementById('reminderDetails').value.trim();
+            if (!name || !details) { alert('Fyll i alla fält!'); return; }
+            
+            await callAI(
+                `Skriv ett professionellt påminnelsebrev på svenska till: ${name}\nFakturadetaljer: ${details}\n\nBrevet ska vara vänligt men tydligt, och innehålla en uppmaning att betala inom 10 dagar.`,
+                'Du är en expert på affärskommunikation på svenska. Skriv professionella och tydliga brev.',
+                'loading-paminnelse', 'result-paminnelse', 'content-paminnelse'
+            );
+        }
+    </script>
+</body>
+</html>
