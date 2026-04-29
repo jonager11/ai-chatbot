@@ -11,9 +11,8 @@ const client = new Anthropic({
   apiKey: process.env.ANTHROPIC_API_KEY,
 });
 
-app.post("/chat", async (req, res) => {
+app.post("/api/chat", async (req, res) => {
   const { message } = req.body;
-
   const response = await client.messages.create({
     model: "claude-opus-4-6",
     max_tokens: 1024,
