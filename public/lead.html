@@ -288,16 +288,8 @@ Regler:
             messages.push({ role: 'assistant', content: reply });
             await addBotMessage(reply);
 
-            // Visa svarsalternativ för fråga 3
-            if (reply.includes('(a)') || reply.includes('problem')) {
-                document.getElementById('options').innerHTML = `
-                    <button class="option-btn" onclick="sendMessage('Vi missar kundförfrågningar utanför kontorstid')">📞 Missar förfrågningar</button>
-                    <button class="option-btn" onclick="sendMessage('Vi lägger för mycket tid på administration')">📄 För mycket admin</button>
-                    <button class="option-btn" onclick="sendMessage('Vi vill ha fler leads automatiskt')">🎯 Fler leads</button>
-                    <button class="option-btn" onclick="sendMessage('Vi vill synas bättre på Google')">🔍 Bättre SEO</button>
-                `;
-            }
-        }
+           
+        
 
         // Starta konversationen
         window.onload = async () => {
