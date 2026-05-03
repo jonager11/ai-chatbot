@@ -234,8 +234,10 @@
             const response = await fetch("/api/chat", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ message })
-            });
+                body: JSON.stringify({ 
+    message,
+    system: "Du är en hjälpsam kundtjänstassistent för ett takläggningsföretag. Du kan svara på frågor om takreparationer, takbyten, taktäckning med olika material som tegelpannor, plåttak och papp, läggning av nya tak, kostnadsfria besiktningar och offertförfrågningar. Du bokar in besiktningar och svarar professionellt på svenska. Om kunden vill ha en offert eller boka besiktning, be om deras namn, adress och telefonnummer."
+})
 
             const data = await response.json();
             document.getElementById("typing").remove();
