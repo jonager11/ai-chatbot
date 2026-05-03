@@ -280,12 +280,25 @@
             height: 100%;
             border: none;
         }
+        .feature-btn {
+    display: inline-block;
+    margin-top: 16px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: white;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: opacity 0.2s;
+}
+.feature-btn:hover { opacity: 0.8; }
     </style>
 </head>
 <body>
 
     <!-- HERO -->
-    <section class="hero">
+ <section class="hero">
         <h1>AI-agenter för<br>svenska företag</h1>
         <p>Automatisera kundtjänst, leads och administration med skräddarsydda AI-lösningar på svenska.</p>
         <a href="#" class="btn" onclick="openDemo()">🤖 Testa demo</a>
@@ -301,21 +314,25 @@
                 <div class="feature-icon">💬</div>
                 <h3>Kundtjänst-chatbot</h3>
                 <p>Svarar på kundfrågor dygnet runt på svenska. Hanterar upp till 80% av vanliga ärenden automatiskt.</p>
+                <a href="/index.html" class="feature-btn">Testa nu →</a>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">🎯</div>
                 <h3>Lead-kvalificerare</h3>
                 <p>Fångar och kvalificerar leads automatiskt. Bokar möten direkt i din kalender utan manuellt arbete.</p>
+                <a href="/lead.html" class="feature-btn">Testa nu →</a>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">📄</div>
                 <h3>Faktura & Admin</h3>
                 <p>Hanterar fakturor, påminnelser och rapporter automatiskt. Integreras med Fortnox och Visma.</p>
+                <a href="/faktura.html" class="feature-btn">Testa nu →</a>
             </div>
             <div class="feature-card">
                 <div class="feature-icon">✍️</div>
                 <h3>SEO-innehåll</h3>
                 <p>Producerar SEO-optimerat innehåll på professionell svenska. Publicerar direkt till din hemsida.</p>
+                <a href="/seo.html" class="feature-btn">Testa nu →</a>
             </div>
         </div>
     </section>
